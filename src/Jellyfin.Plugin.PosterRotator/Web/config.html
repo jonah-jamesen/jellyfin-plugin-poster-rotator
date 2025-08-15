@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Poster Rotator Settings</title>
+  <style>
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; padding: 24px; }
+    .row { margin-bottom: 12px; }
+    label { display:block; font-weight:600; margin-bottom:6px; }
+    input[type=text], input[type=number] { width: 420px; padding: 8px; }
+    .hint { color:#666; font-size: 12px; }
+  </style>
+</head>
+<body>
+  <h2>Poster Rotator</h2>
+  <div class="row">
+    <label>Server URL</label>
+    <input id="ServerUrl" type="text" placeholder="http://localhost:8096" />
+  </div>
+  <div class="row">
+    <label>API Key</label>
+    <input id="ApiKey" type="text" placeholder="Paste an API key" />
+  </div>
+  <div class="row">
+    <label>Target Libraries (comma-separated)</label>
+    <input id="Libraries" type="text" placeholder="Movies, 4K Movies" />
+  </div>
+  <div class="row">
+    <label>Pool Size</label>
+    <input id="PoolSize" type="number" min="1" value="5" />
+  </div>
+  <div class="row">
+    <label><input id="SequentialRotation" type="checkbox" checked /> Sequential rotation</label>
+  </div>
+  <div class="row">
+    <label><input id="SaveNextToMedia" type="checkbox" checked /> Save posters next to movie (./poster_pool)</label>
+  </div>
+  <div class="row">
+    <label><input id="LockImagesAfterFill" type="checkbox" /> Lock images after pool is established</label>
+  </div>
+  <div class="row">
+    <label><input id="DryRun" type="checkbox" /> Dry Run (log only)</label>
+  </div>
+  <div class="row">
+    <label>Extra Poster Patterns</label>
+    <input id="ExtraPosterPatterns" type="text" placeholder="folder.jpg, alt-*.png" />
+    <div class="hint">Comma-separated globs saved inside ./poster_pool</div>
+  </div>
+  <button id="save">Save</button>
+
+  <script>
+    document.getElementById('save').addEventListener('click', () => {
+      const cfg = {
+        ServerUrl: document.getElementById('ServerUrl').value.trim(),
+        ApiKey: document.getElementById('ApiKey').value.trim(),
+        Libraries: (document.getElementById('Libraries').value || '').split(',').map(s => s.trim()).filter(Boolean),
+        PoolSize: parseInt(document.getElementById('PoolSize').value || '5', 10),
+        SequentialRotation: document.getElementById('SequentialRotation').checked,
+        SaveNextToMedia: document.getElementById('SaveNextToMedia').checked,
+        LockImagesAfterFill: document.getElementById('LockImagesAfterFill').checked,
+        DryRun: document.getElementById('DryRun').checked,
+        ExtraPosterPatterns: (document.getElementById('ExtraPosterPatterns').value || '').split(',').map(s => s.trim()).filter(Boolean)
+      };
+      alert('Save this config in the plugin settings:\n\n' + JSON.stringify(cfg, null, 2));
+    });
+  </script>
+</body>
+</html>

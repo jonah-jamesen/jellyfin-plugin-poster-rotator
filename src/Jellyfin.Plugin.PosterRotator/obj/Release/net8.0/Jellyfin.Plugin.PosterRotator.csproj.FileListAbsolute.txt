@@ -1,0 +1,12 @@
+J:\Jellyfin_poster_rotator\src\Jellyfin.Plugin.PosterRotator\obj\Release\net8.0\Jellyfin.Plugin.PosterRotator.csproj.AssemblyReference.cache
+J:\Jellyfin_poster_rotator\src\Jellyfin.Plugin.PosterRotator\obj\Release\net8.0\Jellyfin.Plugin.PosterRotator.GeneratedMSBuildEditorConfig.editorconfig
+J:\Jellyfin_poster_rotator\src\Jellyfin.Plugin.PosterRotator\obj\Release\net8.0\Jellyfin.Plugin.PosterRotator.AssemblyInfoInputs.cache
+J:\Jellyfin_poster_rotator\src\Jellyfin.Plugin.PosterRotator\obj\Release\net8.0\Jellyfin.Plugin.PosterRotator.AssemblyInfo.cs
+J:\Jellyfin_poster_rotator\src\Jellyfin.Plugin.PosterRotator\obj\Release\net8.0\Jellyfin.Plugin.PosterRotator.csproj.CoreCompileInputs.cache
+J:\Jellyfin_poster_rotator\src\Jellyfin.Plugin.PosterRotator\bin\Release\net8.0\Jellyfin.Plugin.PosterRotator.deps.json
+J:\Jellyfin_poster_rotator\src\Jellyfin.Plugin.PosterRotator\bin\Release\net8.0\Jellyfin.Plugin.PosterRotator.dll
+J:\Jellyfin_poster_rotator\src\Jellyfin.Plugin.PosterRotator\bin\Release\net8.0\Jellyfin.Plugin.PosterRotator.pdb
+J:\Jellyfin_poster_rotator\src\Jellyfin.Plugin.PosterRotator\obj\Release\net8.0\Jellyfin.Plugin.PosterRotator.dll
+J:\Jellyfin_poster_rotator\src\Jellyfin.Plugin.PosterRotator\obj\Release\net8.0\refint\Jellyfin.Plugin.PosterRotator.dll
+J:\Jellyfin_poster_rotator\src\Jellyfin.Plugin.PosterRotator\obj\Release\net8.0\Jellyfin.Plugin.PosterRotator.pdb
+J:\Jellyfin_poster_rotator\src\Jellyfin.Plugin.PosterRotator\obj\Release\net8.0\ref\Jellyfin.Plugin.PosterRotator.dll
