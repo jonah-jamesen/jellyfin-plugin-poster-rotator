@@ -10,12 +10,10 @@
   </style>
 </head>
 <body>
-  <!-- Jellyfin looks for this class to style plugin config pages -->
-<div id="posterrotatorConfigPage"
-     class="page type-interior pluginConfigurationPage"
-     data-require="emby-checkbox,emby-input,emby-button"
-     data-plugin-id="7f6eea8b-0e9c-4cbd-9d2a-31f9a37ce2b7">
-
+  <div id="posterrotatorConfigPage"
+       class="page type-interior pluginConfigurationPage"
+       data-require="emby-checkbox,emby-input,emby-button"
+       data-plugin-id="7f6eea8b-0e9c-4cbd-9d2a-31f9a37ce2b7">
     <div class="content-primary">
       <h2>Poster Rotator</h2>
 
@@ -30,7 +28,7 @@
       </div>
 
       <div class="formRow">
-        <label for="Libraries">Target Libraries (comma-separated names, blank = all)</label>
+        <label for="Libraries">Target Libraries (comma-separated)</label>
         <input is="emby-input" type="text" id="Libraries" placeholder="Movies, 4K Movies">
       </div>
 
@@ -40,35 +38,27 @@
       </div>
 
       <div class="formRow">
-        <label>
-          <input is="emby-checkbox" type="checkbox" id="SequentialRotation" checked>
-          Sequential rotation (unchecked = random)
-        </label>
+        <label><input is="emby-checkbox" type="checkbox" id="SequentialRotation" checked>
+          Sequential rotation (unchecked = random)</label>
       </div>
 
       <div class="formRow">
-        <label>
-          <input is="emby-checkbox" type="checkbox" id="SaveNextToMedia" checked>
-          Save posters next to movie (./poster_pool)
-        </label>
+        <label><input is="emby-checkbox" type="checkbox" id="SaveNextToMedia" checked>
+          Save posters next to movie (./poster_pool)</label>
       </div>
 
       <div class="formRow">
-        <label>
-          <input is="emby-checkbox" type="checkbox" id="LockImagesAfterFill">
-          Lock images after pool is established
-        </label>
+        <label><input is="emby-checkbox" type="checkbox" id="LockImagesAfterFill">
+          Lock images after pool is established</label>
       </div>
 
       <div class="formRow">
-        <label>
-          <input is="emby-checkbox" type="checkbox" id="DryRun">
-          Dry Run (log only, no changes)
-        </label>
+        <label><input is="emby-checkbox" type="checkbox" id="DryRun">
+          Dry Run (log only)</label>
       </div>
 
       <div class="formRow">
-        <label for="ExtraPosterPatterns">Extra Poster Patterns (comma-separated globs)</label>
+        <label for="ExtraPosterPatterns">Extra Poster Patterns (comma-separated)</label>
         <input is="emby-input" type="text" id="ExtraPosterPatterns" placeholder="folder.jpg, alt-*.png">
       </div>
 
@@ -78,51 +68,67 @@
     </div>
   </div>
 
-  <script type="text/javascript">
-    // Use your plugin GUID here
-    const pluginId = '7f6eea8b-0e9c-4cbd-9d2a-31f9a37ce2b7';
+  <script>
+    // Helpers
+    function getPageRoot() {
+      return document.getElementById('posterrotatorConfigPage');
+    }
+    function getPluginId() {
+      return getPageRoot().getAttribute('data-plugin-id');
+    }
+    function q(id) { return document.getElementById(id); }
 
+    // Populate form from server config
     function loadConfig() {
-      return ApiClient.getPluginConfiguration(pluginId).then(cfg => {
-        document.getElementById('ServerUrl').value = cfg.ServerUrl || '';
-        document.getElementById('ApiKey').value = cfg.ApiKey || '';
-        document.getElementById('Libraries').value = (cfg.Libraries || []).join(', ');
-        document.getElementById('PoolSize').value = cfg.PoolSize ?? 5;
-        document.getElementById('SequentialRotation').checked = !!cfg.SequentialRotation;
-        document.getElementById('SaveNextToMedia').checked = cfg.SaveNextToMedia !== false;
-        document.getElementById('LockImagesAfterFill').checked = !!cfg.LockImagesAfterFill;
-        document.getElementById('DryRun').checked = !!cfg.DryRun;
-        document.getElementById('ExtraPosterPatterns').value = (cfg.ExtraPosterPatterns || []).join(', ');
-      });
+      const pluginId = getPluginId();
+      Dashboard.showLoadingMsg();
+
+      return ApiClient.getPluginConfiguration(pluginId)
+        .then(cfg => {
+          q('ServerUrl').value = cfg.ServerUrl || '';
+          q('ApiKey').value = cfg.ApiKey || '';
+          q('Libraries').value = (cfg.Libraries || []).join(', ');
+          q('PoolSize').value = cfg.PoolSize ?? 5;
+          q('SequentialRotation').checked = !!cfg.SequentialRotation;
+          q('SaveNextToMedia').checked = cfg.SaveNextToMedia !== false;
+          q('LockImagesAfterFill').checked = !!cfg.LockImagesAfterFill;
+          q('DryRun').checked = !!cfg.DryRun;
+          q('ExtraPosterPatterns').value = (cfg.ExtraPosterPatterns || []).join(', ');
+        })
+        .finally(() => Dashboard.hideLoadingMsg());
+    }
+
+    // Collect form → config object
+    function collectConfig(cfg) {
+      cfg.ServerUrl = q('ServerUrl').value.trim();
+      cfg.ApiKey = q('ApiKey').value.trim();
+      cfg.Libraries = (q('Libraries').value || '').split(',').map(s => s.trim()).filter(Boolean);
+      cfg.PoolSize = Math.max(1, parseInt(q('PoolSize').value || '5', 10));
+      cfg.SequentialRotation = q('SequentialRotation').checked;
+      cfg.SaveNextToMedia = q('SaveNextToMedia').checked;
+      cfg.LockImagesAfterFill = q('LockImagesAfterFill').checked;
+      cfg.DryRun = q('DryRun').checked;
+      cfg.ExtraPosterPatterns = (q('ExtraPosterPatterns').value || '').split(',').map(s => s.trim()).filter(Boolean);
+      return cfg;
     }
 
     function saveConfig() {
-      return ApiClient.getPluginConfiguration(pluginId).then(cfg => {
-        cfg.ServerUrl = document.getElementById('ServerUrl').value.trim();
-        cfg.ApiKey = document.getElementById('ApiKey').value.trim();
-        cfg.Libraries = (document.getElementById('Libraries').value || '')
-          .split(',').map(s => s.trim()).filter(Boolean);
-        cfg.PoolSize = parseInt(document.getElementById('PoolSize').value || '5', 10);
-        cfg.SequentialRotation = document.getElementById('SequentialRotation').checked;
-        cfg.SaveNextToMedia = document.getElementById('SaveNextToMedia').checked;
-        cfg.LockImagesAfterFill = document.getElementById('LockImagesAfterFill').checked;
-        cfg.DryRun = document.getElementById('DryRun').checked;
-        cfg.ExtraPosterPatterns = (document.getElementById('ExtraPosterPatterns').value || '')
-          .split(',').map(s => s.trim()).filter(Boolean);
+      const pluginId = getPluginId();
+      Dashboard.showLoadingMsg();
 
-        return ApiClient.updatePluginConfiguration(pluginId, cfg).then(Dashboard.processPluginConfigurationUpdateResult);
-      });
+      return ApiClient.getPluginConfiguration(pluginId)
+        .then(cfg => collectConfig(cfg))
+        .then(cfg => ApiClient.updatePluginConfiguration(pluginId, cfg))
+        .then(Dashboard.processPluginConfigurationUpdateResult)
+        .finally(() => Dashboard.hideLoadingMsg());
     }
 
+    // Hook page lifecycle
     document.addEventListener('viewshow', function (e) {
       const page = e.target.closest('.pluginConfigurationPage');
-      if (page && page.id === 'posterrotatorConfigPage') {
-        loadConfig();
-      }
-    });
-
-    document.getElementById('saveBtn').addEventListener('click', function () {
-      saveConfig();
+      if (!page || page.id !== 'posterrotatorConfigPage') return;
+      loadConfig();
+      q('saveBtn').onclick = saveConfig;
     });
   </script>
 </body>
