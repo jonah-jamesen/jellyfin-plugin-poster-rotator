@@ -1,14 +1,28 @@
 <Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
+    <RootNamespace>Jellyfin.Plugin.PosterRotator</RootNamespace>
+    <AssemblyName>Jellyfin.Plugin.PosterRotator</AssemblyName>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <!-- optional, but helpful for testing/upgrades -->
+    <Version>1.0.0.0</Version>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <FileVersion>1.0.0.0</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Jellyfin.Model" Version="10.10.3" />
     <PackageReference Include="Jellyfin.Controller" Version="10.10.3" />
+    <PackageReference Include="Jellyfin.Model" Version="10.10.3" />
     <PackageReference Include="Jellyfin.Common" Version="10.10.3" />
     <PackageReference Include="Jellyfin.Extensions" Version="10.10.3" />
   </ItemGroup>
+
+  <!-- Embed the settings page just like the official plugin template -->
+  <ItemGroup>
+    <None Remove="Configuration\config.html" />
+    <EmbeddedResource Include="Configuration\config.html" />
+  </ItemGroup>
+
 </Project>
