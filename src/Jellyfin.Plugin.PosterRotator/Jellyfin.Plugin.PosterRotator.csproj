@@ -1,13 +1,26 @@
-<PropertyGroup>
-  <TargetFramework>net8.0</TargetFramework>
-  <ImplicitUsings>enable</ImplicitUsings>
-  <Nullable>enable</Nullable>
-  <!-- four-part plugin version -->
-  <Version>1.0.0.0</Version>
-  <AssemblyVersion>1.0.0.0</AssemblyVersion>
-  <FileVersion>1.0.0.0</FileVersion>
-</PropertyGroup>
-<ItemGroup>
-  <EmbeddedResource Include="Web\**" />
-</ItemGroup>
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <Version>1.0.1.0</Version>
+    <AssemblyVersion>1.0.1.0</AssemblyVersion>
+    <FileVersion>1.0.1.0</FileVersion>
+    <!-- Optional but helps keep names stable -->
+    <RootNamespace>Jellyfin.Plugin.PosterRotator</RootNamespace>
+  </PropertyGroup>
 
+  <ItemGroup>
+    <None Remove="Configuration\config.html" />
+    <EmbeddedResource Include="Configuration\config.html">
+      <LogicalName>Jellyfin.Plugin.PosterRotator.Configuration.config.html</LogicalName>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Jellyfin.Model" Version="10.10.3" />
+    <PackageReference Include="Jellyfin.Controller" Version="10.10.3" />
+    <PackageReference Include="Jellyfin.Common" Version="10.10.3" />
+    <PackageReference Include="Jellyfin.Extensions" Version="10.10.3" />
+  </ItemGroup>
+</Project>
