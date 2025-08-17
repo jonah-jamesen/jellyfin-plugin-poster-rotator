@@ -1,135 +1,123 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="utf-8"/>
-  <title>Poster Rotator Settings</title>
-  <style>
-    .formRow { margin: 1rem 0; }
-    label { display:block; font-weight:600; margin-bottom:.35rem; }
-    input[type=text], input[type=number] { width: 420px; max-width: 100%; }
-  </style>
+  <meta charset="utf-8" />
+  <title>Poster Rotator</title>
 </head>
 <body>
-  <div id="posterrotatorConfigPage"
+  <div id="PosterRotatorConfigPage"
+       data-role="page"
        class="page type-interior pluginConfigurationPage"
-       data-require="emby-checkbox,emby-input,emby-button"
-       data-plugin-id="7f6eea8b-0e9c-4cbd-9d2a-31f9a37ce2b7">
-    <div class="content-primary">
-      <h2>Poster Rotator</h2>
+       data-require="emby-input,emby-button,emby-checkbox">
 
-      <div class="formRow">
-        <label for="ServerUrl">Server URL</label>
-        <input is="emby-input" type="text" id="ServerUrl" placeholder="http://localhost:8096">
-      </div>
+    <div data-role="content">
+      <div class="content-primary">
+        <form id="PosterRotatorConfigForm">
 
-      <div class="formRow">
-        <label for="ApiKey">API Key</label>
-        <input is="emby-input" type="text" id="ApiKey" placeholder="Create in Dashboard → API Keys">
-      </div>
+          <div class="inputContainer">
+            <label class="inputLabel inputLabelUnfocused" for="PoolSize">Pool Size (posters per movie)</label>
+            <input id="PoolSize" type="number" min="1" is="emby-input" value="5" />
+          </div>
 
-      <div class="formRow">
-        <label for="Libraries">Target Libraries (comma-separated)</label>
-        <input is="emby-input" type="text" id="Libraries" placeholder="Movies, 4K Movies">
-      </div>
+          <div class="inputContainer">
+            <label class="inputLabel inputLabelUnfocused" for="MinHoursBetweenSwitches">Minimum hours between switches</label>
+            <input id="MinHoursBetweenSwitches" type="number" min="1" is="emby-input" value="24" />
+            <div class="fieldDescription">Default: 24. This cooldown is enforced per item.</div>
+          </div>
 
-      <div class="formRow">
-        <label for="PoolSize">Pool Size (posters per movie)</label>
-        <input is="emby-input" type="number" id="PoolSize" min="1" value="5">
-      </div>
+          <div class="checkboxContainer checkboxContainer-withDescription">
+            <label class="emby-checkbox-label">
+              <input id="SequentialRotation" type="checkbox" is="emby-checkbox" />
+              <span>Sequential rotation (unchecked = random)</span>
+            </label>
+          </div>
 
-      <div class="formRow">
-        <label><input is="emby-checkbox" type="checkbox" id="SequentialRotation" checked>
-          Sequential rotation (unchecked = random)</label>
-      </div>
+          <div class="checkboxContainer checkboxContainer-withDescription">
+            <label class="emby-checkbox-label">
+              <input id="SaveNextToMedia" type="checkbox" is="emby-checkbox" />
+              <span>Save posters next to movie (./poster_pool)</span>
+            </label>
+          </div>
 
-      <div class="formRow">
-        <label><input is="emby-checkbox" type="checkbox" id="SaveNextToMedia" checked>
-          Save posters next to movie (./poster_pool)</label>
-      </div>
+          <div class="inputContainer">
+            <label class="inputLabel inputLabelUnfocused" for="ExtraPosterPatterns">Extra Poster Patterns (comma-separated)</label>
+            <input id="ExtraPosterPatterns" type="text" is="emby-input" placeholder="folder.jpg, alt-*.png" />
+          </div>
 
-      <div class="formRow">
-        <label><input is="emby-checkbox" type="checkbox" id="LockImagesAfterFill">
-          Lock images after pool is established</label>
-      </div>
-
-      <div class="formRow">
-        <label><input is="emby-checkbox" type="checkbox" id="DryRun">
-          Dry Run (log only)</label>
-      </div>
-
-      <div class="formRow">
-        <label for="ExtraPosterPatterns">Extra Poster Patterns (comma-separated)</label>
-        <input is="emby-input" type="text" id="ExtraPosterPatterns" placeholder="folder.jpg, alt-*.png">
-      </div>
-
-      <div class="formRow">
-        <button is="emby-button" type="button" class="raised button-submit block" id="saveBtn">Save</button>
+          <div>
+            <button is="emby-button" type="submit" class="raised button-submit block emby-button">
+              <span>Save</span>
+            </button>
+          </div>
+        </form>
       </div>
     </div>
+
+    <script type="text/javascript">
+      (function () {
+        var pluginId = '7f6eea8b-0e9c-4cbd-9d2a-31f9a37ce2b7'; // MUST match Plugin.Id
+
+        function byId(id) { return document.getElementById(id); }
+
+        function load() {
+          Dashboard.showLoadingMsg();
+          ApiClient.getPluginConfiguration(pluginId)
+            .then(function (cfg) {
+              if (byId('PoolSize')) byId('PoolSize').value = (cfg.PoolSize ?? 5);
+              if (byId('MinHoursBetweenSwitches')) byId('MinHoursBetweenSwitches').value = (cfg.MinHoursBetweenSwitches ?? 24);
+              if (byId('SequentialRotation')) byId('SequentialRotation').checked = !!cfg.SequentialRotation;
+              if (byId('SaveNextToMedia')) byId('SaveNextToMedia').checked = (cfg.SaveNextToMedia !== false);
+              if (byId('ExtraPosterPatterns')) byId('ExtraPosterPatterns').value = (cfg.ExtraPosterPatterns || []).join(', ');
+            })
+            .catch(function (err) {
+              console.error('PosterRotator load error:', err);
+              alert('Failed to load configuration. See console for details.');
+            })
+            .finally(function () { Dashboard.hideLoadingMsg(); });
+        }
+
+        function save(e) {
+          e && e.preventDefault();
+          Dashboard.showLoadingMsg();
+
+          ApiClient.getPluginConfiguration(pluginId)
+            .then(function (cfg) {
+              var n = parseInt((byId('PoolSize')?.value || '5'), 10);
+              cfg.PoolSize = (isNaN(n) || n < 1) ? 5 : n;
+
+              var h = parseInt((byId('MinHoursBetweenSwitches')?.value || '24'), 10);
+              cfg.MinHoursBetweenSwitches = (isNaN(h) || h < 1) ? 24 : h;
+
+              cfg.SequentialRotation = !!(byId('SequentialRotation') && byId('SequentialRotation').checked);
+              cfg.SaveNextToMedia = !!(byId('SaveNextToMedia') && byId('SaveNextToMedia').checked);
+
+              var extra = (byId('ExtraPosterPatterns')?.value || '');
+              cfg.ExtraPosterPatterns = extra.split(',').map(function (s) { return s.trim(); }).filter(Boolean);
+
+              return ApiClient.updatePluginConfiguration(pluginId, cfg);
+            })
+            .then(function (result) { Dashboard.processPluginConfigurationUpdateResult(result); })
+            .catch(function (err) {
+              console.error('PosterRotator save error:', err);
+              alert('Failed to save configuration. See console for details.');
+            })
+            .finally(function () { Dashboard.hideLoadingMsg(); });
+
+          return false;
+        }
+
+        var root = byId('PosterRotatorConfigPage');
+        var form = byId('PosterRotatorConfigForm');
+
+        if (root) {
+          root.addEventListener('pageshow', load);
+          root.addEventListener('viewshow', load); // covers new-tab case
+        }
+        if (form) {
+          form.addEventListener('submit', save);
+        }
+      })();
+    </script>
   </div>
-
-  <script>
-    // Helpers
-    function getPageRoot() {
-      return document.getElementById('posterrotatorConfigPage');
-    }
-    function getPluginId() {
-      return getPageRoot().getAttribute('data-plugin-id');
-    }
-    function q(id) { return document.getElementById(id); }
-
-    // Populate form from server config
-    function loadConfig() {
-      const pluginId = getPluginId();
-      Dashboard.showLoadingMsg();
-
-      return ApiClient.getPluginConfiguration(pluginId)
-        .then(cfg => {
-          q('ServerUrl').value = cfg.ServerUrl || '';
-          q('ApiKey').value = cfg.ApiKey || '';
-          q('Libraries').value = (cfg.Libraries || []).join(', ');
-          q('PoolSize').value = cfg.PoolSize ?? 5;
-          q('SequentialRotation').checked = !!cfg.SequentialRotation;
-          q('SaveNextToMedia').checked = cfg.SaveNextToMedia !== false;
-          q('LockImagesAfterFill').checked = !!cfg.LockImagesAfterFill;
-          q('DryRun').checked = !!cfg.DryRun;
-          q('ExtraPosterPatterns').value = (cfg.ExtraPosterPatterns || []).join(', ');
-        })
-        .finally(() => Dashboard.hideLoadingMsg());
-    }
-
-    // Collect form → config object
-    function collectConfig(cfg) {
-      cfg.ServerUrl = q('ServerUrl').value.trim();
-      cfg.ApiKey = q('ApiKey').value.trim();
-      cfg.Libraries = (q('Libraries').value || '').split(',').map(s => s.trim()).filter(Boolean);
-      cfg.PoolSize = Math.max(1, parseInt(q('PoolSize').value || '5', 10));
-      cfg.SequentialRotation = q('SequentialRotation').checked;
-      cfg.SaveNextToMedia = q('SaveNextToMedia').checked;
-      cfg.LockImagesAfterFill = q('LockImagesAfterFill').checked;
-      cfg.DryRun = q('DryRun').checked;
-      cfg.ExtraPosterPatterns = (q('ExtraPosterPatterns').value || '').split(',').map(s => s.trim()).filter(Boolean);
-      return cfg;
-    }
-
-    function saveConfig() {
-      const pluginId = getPluginId();
-      Dashboard.showLoadingMsg();
-
-      return ApiClient.getPluginConfiguration(pluginId)
-        .then(cfg => collectConfig(cfg))
-        .then(cfg => ApiClient.updatePluginConfiguration(pluginId, cfg))
-        .then(Dashboard.processPluginConfigurationUpdateResult)
-        .finally(() => Dashboard.hideLoadingMsg());
-    }
-
-    // Hook page lifecycle
-    document.addEventListener('viewshow', function (e) {
-      const page = e.target.closest('.pluginConfigurationPage');
-      if (!page || page.id !== 'posterrotatorConfigPage') return;
-      loadConfig();
-      q('saveBtn').onclick = saveConfig;
-    });
-  </script>
 </body>
 </html>
