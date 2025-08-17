@@ -12,7 +12,7 @@
         "version": "1.0.1.0",
         "targetAbi": "10.10.0.0",
         "sourceUrl": "https://github.com/jonah-jamesen/jellyfin-plugin-poster-rotator/releases/download/v1.0.1.0/Jellyfin.Plugin.PosterRotator-1.0.1.0.zip",
-        "checksum": "8605e74958b0cb6b294c19712c5be128",
+        "checksum": "80fb3680f42afb6be11c89a88bf233e5",
         "timestamp": "2025-08-17T14:30:00Z",
         "changelog": "Initial release."
       }
